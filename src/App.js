@@ -153,10 +153,18 @@ export default function App() {
     setPhase('generating'); setGenErr('');
     let idx = 0;
     const iv = setInterval(() => { idx = (idx + 1) % LOAD_MSGS.length; setLoadMsg(idx); }, 1800);
-    try {
+   try {
       const result = await generatePlan(profile);
       clearInterval(iv);
-      await supabase.from('profiles').upsert({ id: session.user.id, full_name: session.user.user_metadata?.full_name || '', sex: profile.sex, age: profile.age, goal: profile.goal, level: profile.level, days: profile.days, limitation: profile.limit, plan: result });
+      console.log('Plan result:', JSON.stringify(result));
+      setPlan(result);
+      setPhase('plan');
+    } catch (e) {
+      clearInterval(iv);
+      console.log('Error:', e.message);
+      setGenErr('Nepodařilo se vygenerovat plán. Zkus to znovu.');
+      setPhase('onboard'); setStep(STEPS.length - 1);
+    } id: session.user.id, full_name: session.user.user_metadata?.full_name || '', sex: profile.sex, age: profile.age, goal: profile.goal, level: profile.level, days: profile.days, limitation: profile.limit, plan: result });
       setPlan(result); setPhase('plan');
     } catch (e) {
       clearInterval(iv);
