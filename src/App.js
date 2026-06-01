@@ -51,8 +51,8 @@ async function generatePlan(profile) {
     body: JSON.stringify({ prompt }),
   });
   const data = await res.json();
-  const text = data.content.map(b => b.text || '').join('');
-  return JSON.parse(text.replace(/```json|```/g, '').trim());
+  if (data.error) throw new Error(data.error);
+  return data;
 }
 
 function Input({ label, type = 'text', value, onChange, placeholder, icon }) {
